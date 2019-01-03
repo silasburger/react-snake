@@ -1,12 +1,14 @@
-import React, {Component} from './React';
+import React, {Component} from 'react';
 
-class Snake {
-  constructor(props) {
-    super(props);
-  }
-
+class Snake extends 
+Component {
   render() {
-    
+    const parts = this.props.parts.map(coord => {
+      const [y, x] = coord;
+      return <div key={`${x}-${y}`} className="snake-part" style={{top:y, left:x}}/>
+    });
+    return parts;
   }
-
 }
+
+export default Snake;

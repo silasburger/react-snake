@@ -1,24 +1,39 @@
 import React, { Component } from 'react';
+import Snake from './Snake';
+import Apple from './Apple';
 
 //This class renders the board handles moving the snake
 class Board extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      snakeCoords: this.generateInitialCoords(),
+      snakeCoords: this.generateSnakeCoords(),
       direction: 'E',
+      appleCoords: this.generateAppleCoords(),
     }
   }
 
   static defaultProps = {
-    height: 800,
-    width: 800,
+    height: 500,
+    width: 500,
+  }
+  
+  generateAppleCoords() {
+    let x = Math.floor(Math.random() * 480);
+    let y = Math.floor(Math.random() * 480);
+    return [ y, x ];
+  }
+
+  generateSnakeCoords() {
+    const x = Math.floor(this.props.height / 2);
+    const y = Math.floor(this.props.width / 2);
+    return [ [y, x], [y, (x - 10)], [y, (x - 20)] ];
   }
 
   componentDidMount() {
-    // this.timerId = setInterval(() => {
-    //   this.move(this.state.direction);
-    // }, 500);    
+    this.timerId = setInterval(() => {
+      this.move(this.state.direction);
+    }, 100);    
   }
 
   /*
@@ -26,60 +41,62 @@ class Board extends Component {
   The a new head will be pushed onto the snake depending on the current direction held in state.
   */
   move(direction) {
-    console.log(direction);
     let snakeCoords = this.state.snakeCoords;
     let head = snakeCoords[0];
-    snakeCoords.pop();
     if(direction === 'N') {
       if(head[0] === 0) {
-        snakeCoords.unshift([this.props.ncols - 1, head[1]]);
+        snakeCoords.unshift([this.props.height - 10, head[1]]);
       } else {
-        snakeCoords.unshift([head[0] + 1, head[1]]);
+        snakeCoords.unshift([head[0] - 10, head[1]]);
       }
     }
     if(direction === 'E') {
-      if(head[1] === this.props.ncols.length - 1) {
+      if(head[1] === this.props.width - 10) {
         snakeCoords.unshift([head[0], 0]);
       } else {
-        snakeCoords.unshift([head[0], head[1] + 1]);
+        snakeCoords.unshift([head[0], head[1] + 10]);
       }
     }
     if(direction === 'S') {
-      if(head[0] === this.props.nrows.length - 1) {
+      if(head[0] === this.props.height-10) {
         snakeCoords.unshift([0, head[1]]);
       } else {
-        snakeCoords.unshift([head[0] - 1, head[1]]);
+        snakeCoords.unshift([head[0] + 10, head[1]]);
       }
     }
     if(direction === 'W') {
       if(head[1] === 0) {
-        snakeCoords.unshift([head[0], this.props.ncols.length - 1]);
+        snakeCoords.unshift([head[0], this.props.width - 10]);
       } else {
-        snakeCoords.unshift([head[0], head[1] - 1]);
+        snakeCoords.unshift([head[0], head[1] - 10]);
       }
     }
+    snakeCoords.pop();
     this.setState({snakeCoords})
   }
 
-  generateInitialCoords() {
-    const x = Math.floor(this.props.ncols / 2);
-    const y = Math.floor(this.props.nrows / 2);
-    return [[y, x]];
-  }
+  changeDirection = (event) => {
+    console.log('event triggered', event.keyCode);
+    const key = event.keyCode;
+    let direction;
+    if(key === 37) direction = 'W';
+    if(key === 38) direction = 'N';
+    if(key === 39) direction = 'E';
+    if(key === 40) direction = 'S';
+    this.setState({direction});
+  };
 
-  drawSnake() {
-    let board = this.state.board;
-    for(let i = 0; i < this.snakeCoords.length; i++) {
-      board[this.snakeCoords[i][0]][this.snakeCoords[i][1]] = true;
-    }
-    this.setState({board});
-  }
 
   render() {
-    
-    return <div className="board" style={{height: this.props.height, width: this.props.width}}>
-      <snake></snake>
-    </div>;
+    return (
+      <div className="board" 
+                  style={{height: `${this.props.height}px`, width: `${this.props.width}px`}}
+                  tabIndex='0'
+                  onKeyDown={this.changeDirection}>
+        <Snake parts={this.state.snakeCoords} />
+        <Apple coords={this.state.appleCoords} />
+      </div>
+    )
   }
 }
 

@@ -10,12 +10,16 @@
   transform: translate(-50%, -50%);
 }
 
-.snake {
+.snake-part {
+  position: absolute;
   background-color: black;
+  width: 10px;
+  height: 10px;
 }
 
-.no-snake {
-  background-color: papayawhip;
-  width: 25px;
-  height: 25px;
+.apple {
+  position: absolute;
+  background-color: tomato;
+  width: 10px;
+  height: 10px;
 }
