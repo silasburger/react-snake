@@ -11,6 +11,7 @@ class Board extends Component {
       direction: 'E',
       appleCoords: this.generateAppleCoords(),
     }
+    window.document.addEventListener('keydown', this.changeDirection);
   }
 
   static defaultProps = {
@@ -19,8 +20,8 @@ class Board extends Component {
   }
   
   generateAppleCoords() {
-    let x = Math.floor(Math.random() * 480);
-    let y = Math.floor(Math.random() * 480);
+    let x = Math.round((Math.random()*490)/10)*10;
+    let y = Math.round((Math.random()*490)/10)*10;
     return [ y, x ];
   }
 
@@ -40,7 +41,8 @@ class Board extends Component {
   The snake will pop off the tail.
   The a new head will be pushed onto the snake depending on the current direction held in state.
   */
-  move(direction) {
+ move(direction) {
+    let appleCoords = this.state.appleCoords;
     let snakeCoords = this.state.snakeCoords;
     let head = snakeCoords[0];
     if(direction === 'N') {
@@ -71,12 +73,27 @@ class Board extends Component {
         snakeCoords.unshift([head[0], head[1] - 10]);
       }
     }
-    snakeCoords.pop();
-    this.setState({snakeCoords})
+
+    if(this.sameCoords(appleCoords, snakeCoords[0])) {
+      this.setState({snakeCoords, appleCoords: this.generateAppleCoords()});
+    } else {
+      snakeCoords.pop();
+      this.setState({snakeCoords});
+    }
+
+ 
+  }
+
+  sameCoords(coords1, coords2) {
+    const [y1, x1] = coords1;
+    const [y2, x2] = coords2;
+    if(x1 === x2 && y1 === y2) {
+      return true;
+    }
+    return false;
   }
 
   changeDirection = (event) => {
-    console.log('event triggered', event.keyCode);
     const key = event.keyCode;
     let direction;
     if(key === 37) direction = 'W';

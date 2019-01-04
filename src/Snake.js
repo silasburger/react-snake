@@ -5,7 +5,7 @@ Component {
   render() {
     const parts = this.props.parts.map(coord => {
       const [y, x] = coord;
-      return <div key={`${x}-${y}`} className="snake-part" style={{top:y, left:x}}/>
+      return <div key={`${y}-${x}`} className="snake-part" style={{top:y, left:x}}/>
     });
     return parts;
   }
