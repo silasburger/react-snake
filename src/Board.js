@@ -10,6 +10,7 @@ class Board extends Component {
       snakeCoords: this.generateSnakeCoords(),
       direction: 'E',
       appleCoords: this.generateAppleCoords(),
+      hasLost: false,
     }
     window.document.addEventListener('keydown', this.changeDirection);
   }
@@ -74,6 +75,12 @@ class Board extends Component {
       }
     }
 
+    for(let i = 1; i < snakeCoords.length; i++) {
+      if(this.sameCoords(snakeCoords[0], snakeCoords[i])) {
+        this.setState({hasLost: true})
+      }
+    }
+
     if(this.sameCoords(appleCoords, snakeCoords[0])) {
       this.setState({snakeCoords, appleCoords: this.generateAppleCoords()});
     } else {
@@ -95,25 +102,32 @@ class Board extends Component {
 
   changeDirection = (event) => {
     const key = event.keyCode;
-    let direction;
-    if(key === 37) direction = 'W';
-    if(key === 38) direction = 'N';
-    if(key === 39) direction = 'E';
-    if(key === 40) direction = 'S';
+    let direction = this.state.direction;
+
+    if(key === 37 && direction !== 'E') direction = 'W';
+    if(key === 38 && direction !== 'S') direction = 'N';
+    if(key === 39 && direction !== 'W') direction = 'E';
+    if(key === 40 && direction !== 'N') direction = 'S';
     this.setState({direction});
   };
 
 
   render() {
-    return (
-      <div className="board" 
-                  style={{height: `${this.props.height}px`, width: `${this.props.width}px`}}
-                  tabIndex='0'
-                  onKeyDown={this.changeDirection}>
-        <Snake parts={this.state.snakeCoords} />
-        <Apple coords={this.state.appleCoords} />
-      </div>
-    )
+    const board = <div className="board" 
+      style={{height: `${this.props.height}px`, width: `${this.props.width}px`}}
+      tabIndex='0'
+      onKeyDown={this.changeDirection}>
+      {this.state.hasLost ? 
+        <h1 className='has-lost'>You lost</h1> 
+        : 
+        <>
+          <Snake parts={this.state.snakeCoords} />
+          <Apple coords={this.state.appleCoords} />
+        </>
+      }
+    </div>;
+    
+    return board;
   }
 }
 
