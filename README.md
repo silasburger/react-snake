@@ -72,5 +72,5 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 
 1. Cancel timer on component will unmount. DONE
 2. Fix bug that allows you to eat yourself. DONE
-4. Instead of showing you lose make snake shorter (and reset scores)
-3. Add score and high score
+4. Instead of showing you lose make snake shorter (and reset scores). DONE
+3. Add score and high score. DONE
