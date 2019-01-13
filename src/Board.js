@@ -33,13 +33,14 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    this.intervalId = setInterval(() => {
+    this._speed = 150;
+    this._intervalId = setInterval(() => {
       this.move(this.state.direction);
-    }, 100);   
+    }, this._speed);   
   }
 
   componentWillUnmount() {
-    clearInterval(this.intervalId);
+    clearInterval(this._intervalId);
     window.removeEventListener('keydown', this.changeDirection);
 
   }
@@ -51,7 +52,8 @@ class Board extends Component {
  move(direction) {
    let appleCoords = this.state.appleCoords;
    let snakeCoords = this.state.snakeCoords;
-   let head = snakeCoords[0];
+   let head = snakeCoords[0]; 
+
    if(direction === 'N') {
      if(head[0] === 0) {
        snakeCoords.unshift([this.props.height - 10, head[1]]);
@@ -93,20 +95,30 @@ class Board extends Component {
     if(this.sameCoords(appleCoords, snakeCoords[0])) {
       this.setState({snakeCoords, appleCoords: this.generateAppleCoords()});
       this.props.addScore();
+      this.increaseSpeed(this.props.currScore);
     } else {
       snakeCoords.pop();
       this.setState({snakeCoords});
     }
     
-    
     if(this._nextDirection) {
       this.setState({direction: this._nextDirection});
       this._nextDirection = null;
     }
+
     // Must be at end to prevent calling setState on unmounted component
     if(this.state.hasLost) {
       this.props.toggleLost();
     }
+
+  }
+
+  increaseSpeed(score) {
+    this._speed = this._speed - 4;
+    clearInterval(this._intervalId);
+    this._intervalId = setInterval(() => {
+      this.move(this.state.direction);
+    }, this._speed);
   }
   
   sameCoords(coords1, coords2) {
@@ -131,9 +143,7 @@ class Board extends Component {
 
   render() {
     const board = <div className="board" 
-      style={{height: `${this.props.height}px`, width: `${this.props.width}px`}}
-      tabIndex='0'
-      onKeyDown={this.changeDirection}>
+      style={{height: `${this.props.height}px`, width: `${this.props.width}px`}}>
         <>
           <Snake parts={this.state.snakeCoords} />
           <Apple coords={this.state.appleCoords} />

@@ -20,7 +20,7 @@ class App extends Component {
   }
 
   toggleLost() {
-    let highscore;
+    let highscore = this.state.highscore;
     let currScore = 0;
     if(this.state.hasLost === false) currScore = this.state.currScore;
     if(this.state.currScore >= this.state.highscore) highscore = this.state.currScore;
