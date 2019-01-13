@@ -16,13 +16,13 @@ class Board extends Component {
   }
 
   static defaultProps = {
-    height: 500,
-    width: 500,
+    height: 300,
+    width: 300,
   }
   
   generateAppleCoords() {
-    let x = Math.round((Math.random()*490)/10)*10;
-    let y = Math.round((Math.random()*490)/10)*10;
+    let x = Math.round((Math.random()*(this.props.height-10))/10)*10;
+    let y = Math.round((Math.random()*(this.props.width-10))/10)*10;
     return [ y, x ];
   }
 
@@ -33,9 +33,15 @@ class Board extends Component {
   }
 
   componentDidMount() {
-    this.timerId = setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.move(this.state.direction);
-    }, 100);    
+    }, 100);   
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
+    window.removeEventListener('keydown', this.changeDirection);
+
   }
 
   /*
@@ -43,12 +49,12 @@ class Board extends Component {
   The a new head will be pushed onto the snake depending on the current direction held in state.
   */
  move(direction) {
-    let appleCoords = this.state.appleCoords;
-    let snakeCoords = this.state.snakeCoords;
-    let head = snakeCoords[0];
-    if(direction === 'N') {
-      if(head[0] === 0) {
-        snakeCoords.unshift([this.props.height - 10, head[1]]);
+   let appleCoords = this.state.appleCoords;
+   let snakeCoords = this.state.snakeCoords;
+   let head = snakeCoords[0];
+   if(direction === 'N') {
+     if(head[0] === 0) {
+       snakeCoords.unshift([this.props.height - 10, head[1]]);
       } else {
         snakeCoords.unshift([head[0] - 10, head[1]]);
       }
@@ -74,23 +80,35 @@ class Board extends Component {
         snakeCoords.unshift([head[0], head[1] - 10]);
       }
     }
-
+    
+    //Must be first set state to be called or else another set state (one in block below) will allow for duplicate keys upon losing game
     for(let i = 1; i < snakeCoords.length; i++) {
       if(this.sameCoords(snakeCoords[0], snakeCoords[i])) {
-        this.setState({hasLost: true})
+        this.setState({hasLost: true});
       }
     }
-
+    
+    //pops of the tail or leaves it if there is an apple at head coords
+    //add additional squares to tails as score gets higher
     if(this.sameCoords(appleCoords, snakeCoords[0])) {
       this.setState({snakeCoords, appleCoords: this.generateAppleCoords()});
+      this.props.addScore();
     } else {
       snakeCoords.pop();
       this.setState({snakeCoords});
     }
-
- 
+    
+    
+    if(this._nextDirection) {
+      this.setState({direction: this._nextDirection});
+      this._nextDirection = null;
+    }
+    // Must be at end to prevent calling setState on unmounted component
+    if(this.state.hasLost) {
+      this.props.toggleLost();
+    }
   }
-
+  
   sameCoords(coords1, coords2) {
     const [y1, x1] = coords1;
     const [y2, x2] = coords2;
@@ -103,12 +121,11 @@ class Board extends Component {
   changeDirection = (event) => {
     const key = event.keyCode;
     let direction = this.state.direction;
-
     if(key === 37 && direction !== 'E') direction = 'W';
     if(key === 38 && direction !== 'S') direction = 'N';
     if(key === 39 && direction !== 'W') direction = 'E';
     if(key === 40 && direction !== 'N') direction = 'S';
-    this.setState({direction});
+    this._nextDirection = direction;
   };
 
 
@@ -117,17 +134,13 @@ class Board extends Component {
       style={{height: `${this.props.height}px`, width: `${this.props.width}px`}}
       tabIndex='0'
       onKeyDown={this.changeDirection}>
-      {this.state.hasLost ? 
-        <h1 className='has-lost'>You lost</h1> 
-        : 
         <>
           <Snake parts={this.state.snakeCoords} />
           <Apple coords={this.state.appleCoords} />
         </>
-      }
     </div>;
-    
-    return board;
+
+    return this.state.hasLost ? null : board;
   }
 }
 

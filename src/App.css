@@ -1,15 +1,3 @@
-.board {
-  position: absolute;
-  display: flex;
-  width: 500px;
-  height: 500px;
-  border: solid 1px black;
-  flex-wrap: wrap;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
 .snake-part {
   position: absolute;
   background-color: black;
@@ -24,10 +12,29 @@
   height: 10px;
 }
 
-.has-lost {
+.restart-button {
   position: absolute;
   margin: 0;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.game-container {
+  position: absolute;
+  border: solid 1px black;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.high-score {
+  position: absolute;
+  top: -20px;
+  right: 0;
+}
+
+.current-score {
+  position: absolute;
+  top: -20px;
 }

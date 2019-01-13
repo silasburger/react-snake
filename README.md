@@ -66,3 +66,11 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+
+###todo
+
+1. Cancel timer on component will unmount. DONE
+2. Fix bug that allows you to eat yourself. DONE
+4. Instead of showing you lose make snake shorter (and reset scores)
+3. Add score and high score
