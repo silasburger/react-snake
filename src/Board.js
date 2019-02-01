@@ -12,7 +12,7 @@ class Board extends Component {
       appleCoords: this.generateAppleCoords(),
       hasLost: false
     };
-    window.document.addEventListener('keydown', this.changeDirection);
+    document.addEventListener('keydown', this.changeDirection);
   }
 
   static defaultProps = {
@@ -129,13 +129,13 @@ class Board extends Component {
   }
 
   changeDirection = event => {
+    event.stopPropagation();
+    event.preventDefault();
     const key = event.keyCode;
     let direction = this.state.direction;
     if (key === 37 && direction !== 'E') direction = 'W';
     if (key === 38 && direction !== 'S') {
       direction = 'N';
-      event.stopPropagation();
-      event.preventDefault();
     }
     if (key === 39 && direction !== 'W') direction = 'E';
     if (key === 40 && direction !== 'N') direction = 'S';
