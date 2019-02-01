@@ -129,8 +129,6 @@ class Board extends Component {
   }
 
   changeDirection = event => {
-    event.stopPropagation();
-    event.preventDefault();
     const key = event.keyCode;
     let direction = this.state.direction;
     if (key === 65 && direction !== 'E') direction = 'W';
