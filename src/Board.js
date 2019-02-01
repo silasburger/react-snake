@@ -138,6 +138,7 @@ class Board extends Component {
     if(key === 39 && direction !== 'W') direction = 'E';
     if(key === 40 && direction !== 'N') direction = 'S';
     event.stopPropagation();
+    event.preventDefault();
     this._nextDirection = direction;
   };
 
