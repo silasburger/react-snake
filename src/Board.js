@@ -129,14 +129,15 @@ class Board extends Component {
   }
 
   changeDirection = event => {
+    event.stopPropagation();
     const key = event.keyCode;
     let direction = this.state.direction;
-    if (key === 65 && direction !== 'E') direction = 'W';
-    if (key === 87 && direction !== 'S') {
+    if (key === 37 && direction !== 'E') direction = 'W';
+    if (key === 38 && direction !== 'S') {
       direction = 'N';
     }
-    if (key === 68 && direction !== 'W') direction = 'E';
-    if (key === 83 && direction !== 'N') direction = 'S';
+    if (key === 39 && direction !== 'W') direction = 'E';
+    if (key === 40 && direction !== 'N') direction = 'S';
     this._nextDirection = direction;
   };
 
