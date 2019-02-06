@@ -52,7 +52,9 @@ class Board extends Component {
     let appleCoords = this.state.appleCoords;
     let snakeCoords = this.state.snakeCoords;
     let head = snakeCoords[0];
-
+    /**
+     * This is the part where the new head is added to snake coords, depending on the direction
+     */
     if (direction === 'N') {
       if (head[0] === 0) {
         snakeCoords.unshift([this.props.height - 10, head[1]]);
@@ -82,33 +84,53 @@ class Board extends Component {
       }
     }
 
-    //Must be first set state to be called or else another set state (one in block below) will allow for duplicate keys upon losing game
-    for (let i = 1; i < snakeCoords.length; i++) {
-      if (this.sameCoords(snakeCoords[0], snakeCoords[i])) {
-        this.setState({ hasLost: true });
-      }
-    }
+    /**
+     * Sets new conditions for snake, game, and apple in a single setState
+     * also adds score and increases speed
+     */
+    this.setConditions(
+      snakeCoords,
+      appleCoords,
+      this.hasLost(snakeCoords),
+      this._nextDirection
+    );
+  }
 
-    //pops of the tail or leaves it if there is an apple at head coords
-    //add additional squares to tails as score gets higher
+  setConditions(snakeCoords, appleCoords, hasLost, nextDirection) {
+    /**
+     * This conditional handles the business logic of snake movement
+     * In the case that the apple and the head share coords, add to the score, increase speed, and don't pop off tail (this is how it grows)
+     * Otherwise, pop off tail
+     */
     if (this.sameCoords(appleCoords, snakeCoords[0])) {
-      this.setState({ snakeCoords, appleCoords: this.generateAppleCoords() });
       this.props.addScore();
       this.increaseSpeed(this.props.currScore);
+      appleCoords = this.generateAppleCoords();
     } else {
       snakeCoords.pop();
-      this.setState({ snakeCoords });
     }
-
-    if (this._nextDirection) {
-      this.setState({ direction: this._nextDirection });
+     /**
+      * Sets new direction if one has been set and sets it to null
+      */
+    let direction = this.state.direction;
+    if(nextDirection) {
+      direction = nextDirection
       this._nextDirection = null;
     }
 
-    // Must be at end to prevent calling setState on unmounted component
-    if (this.state.hasLost) {
+    this.setState({ snakeCoords, appleCoords, hasLost, direction });
+    if (hasLost) {
       this.props.toggleLost();
     }
+  }
+
+  hasLost(snakeCoords) {
+    for (let i = 1; i < snakeCoords.length; i++) {
+      if (this.sameCoords(snakeCoords[0], snakeCoords[i])) {
+        return true;
+      }
+    }
+    return false;
   }
 
   increaseSpeed(score) {
